@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LocationTest {
 
@@ -50,6 +51,15 @@ class LocationTest {
         var location2 = Location.create(5, 7).getValue();
         var result = location1.distanceTo(location2);
         assertThat(result.getValue()).isEqualTo(7);
+    }
+
+    @Test
+    void testDistanceToNull() {
+        var location = Location.create(5, 5).getValue();
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> location.distanceTo(null)
+                ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

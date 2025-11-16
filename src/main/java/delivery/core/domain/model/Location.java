@@ -41,10 +41,7 @@ public class Location extends ValueObject<Location> {
     }
 
     public Result<Integer, Error> distanceTo(Location target) {
-        if (target == null) {
-            return Result.failure(GeneralErrors.valueIsRequired("target"));
-        }
-
+        Except.againstNull(target, "target");
         int distance = Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
         return Result.success(distance);
     }
