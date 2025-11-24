@@ -69,11 +69,11 @@ class StoragePlaceTest {
     }
 
     @Test
-    void canTakeOrder() {
+    void canFinishOrder() {
         var storage = StoragePlace.create("Backpack", 50).getValue();
         storage.putOrder(UUID.randomUUID(), 10);
 
-        storage.takeOrder();
+        storage.cleanOrder();
 
         assertThat(storage.isEmpty()).isTrue();
         assertThat(storage.getOrderId()).isNull();
