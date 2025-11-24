@@ -126,7 +126,7 @@ public final class Courier extends Aggregate<UUID> {
 
     public static final class Errors {
         public static Error courierCantTakeOrder() {
-            return Error.of(Courier.class.getSimpleName().toLowerCase(), "Courier cannot take the order: no suitable storage place found");
+            return Error.of(Courier.class.getSimpleName().toLowerCase(), "Нет места в хранилище");
         }
     }
 }

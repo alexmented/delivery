@@ -69,7 +69,7 @@ class StoragePlaceTest {
     }
 
     @Test
-    void canFinishOrder() {
+    void checkFinishOrder() {
         var storage = StoragePlace.create("Backpack", 50).getValue();
         storage.putOrder(UUID.randomUUID(), 10);
 
