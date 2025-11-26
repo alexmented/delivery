@@ -65,7 +65,7 @@ public final class StoragePlace extends BaseEntity<UUID> {
         return UnitResult.success();
     }
 
-    public void takeOrder() {
+    public void cleanOrder() {
         this.orderId = null;
     }
 
