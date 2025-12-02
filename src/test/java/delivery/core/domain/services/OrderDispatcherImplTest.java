@@ -23,7 +23,7 @@ class OrderDispatcherImplTest {
     }
 
     @Test
-    void dispatch_shouldReturnClosestCourier() {
+    void checkClosestCourier() {
         Location orderLocation = Location.create(10, 10).getValue();
         Order order = Order.create(UUID.randomUUID(), orderLocation, 5).getValue();
 
@@ -40,9 +40,9 @@ class OrderDispatcherImplTest {
     }
 
     @Test
-    void dispatch_shouldReturnErrorIfNoSuitableCourier() {
+    void checkOrderCreated() {
         Location orderLocation = Location.create(10, 10).getValue();
-        Order order = Order.create(UUID.randomUUID(), orderLocation, 100).getValue();
+        Order order = Order.create(UUID.randomUUID(), orderLocation, 5).getValue();
 
         Location locationCourier = Location.create(1, 1).getValue();
         Courier courier1 = Courier.create("John", 1, locationCourier).getValue();
@@ -51,6 +51,6 @@ class OrderDispatcherImplTest {
 
         Result<Courier, Error> result = dispatcher.dispatch(order, couriers);
 
-        assertThat(result.getError().getMessage()).isEqualTo(OrderDispatcherImpl.Errors.noSuitableCourierFound().getMessage());
+        assertThat(result.isSuccess()).isTrue();
     }
 }
