@@ -1,5 +1,8 @@
 package delivery.core.domain.model.courier;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import libs.ddd.BaseEntity;
 import libs.errs.Err;
 import libs.errs.Error;
@@ -11,6 +14,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@Entity
+@Table(name = "courier_storage_places")
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public final class StoragePlace extends BaseEntity<UUID> {
 
@@ -18,9 +23,11 @@ public final class StoragePlace extends BaseEntity<UUID> {
     private String name;
 
     @Getter
+    @Column(name = "total_volume")
     private int totalVolume;
 
     @Getter
+    @Column(name = "order_id")
     private UUID orderId;
 
     private StoragePlace(UUID id, String name, int totalVolume, UUID orderId) {
