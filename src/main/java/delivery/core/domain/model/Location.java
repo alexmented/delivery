@@ -1,7 +1,8 @@
 package delivery.core.domain.model;
 
-import libs.errs.*;
+import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
+import libs.errs.*;
 import libs.errs.Error;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 
+@Embeddable
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
