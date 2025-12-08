@@ -1,6 +1,7 @@
 package delivery.core.domain.model.courier;
 
 import delivery.core.domain.model.Location;
+import jakarta.persistence.*;
 import libs.ddd.Aggregate;
 import libs.errs.Err;
 import libs.errs.Error;
@@ -15,13 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "couriers")
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public final class Courier extends Aggregate<UUID> {
 
     private String name;
     private int speed;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "x", column = @Column(name = "location_x")),
+        @AttributeOverride(name = "y", column = @Column(name = "location_y"))
+    })
     private Location location;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "courier_id")
     private List<StoragePlace> storagePlaces = new ArrayList<>();
 
     private Courier(UUID id, String name, int speed, Location location) {
