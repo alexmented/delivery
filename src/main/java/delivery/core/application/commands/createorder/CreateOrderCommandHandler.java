@@ -1,0 +1,8 @@
+package delivery.core.application.commands.createorder;
+
+import libs.errs.Error;
+import libs.errs.UnitResult;
+
+public interface CreateOrderCommandHandler {
+    UnitResult<Error> handle(CreateOrderCommand command);
+}
