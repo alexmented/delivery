@@ -33,35 +33,29 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
     public UnitResult<Error> handle(AssignOrderCommand command) {
         List<Courier> freeCouriers = courierRepository.findAllFree();
         if (freeCouriers.isEmpty()) {
-            // System.out.println("No free couriers found");
-            return UnitResult.success(); 
+            return UnitResult.success();
         }
 
         List<Order> unassignedOrders = orderRepository.findAllByStatus(Status.CREATED);;
         if (unassignedOrders.isEmpty()) {
-            // System.out.println("No unassigned orders found");
-            return UnitResult.success(); 
+            return UnitResult.success();
         }
         Order order = unassignedOrders.getFirst();
-        System.out.println("Assigning order " + order.getId() + " (vol: " + order.getVolume() + ")");
 
         Courier bestCourier = null;
         int minSteps = Integer.MAX_VALUE;
 
         for (Courier courier : freeCouriers) {
             if (!courier.isTakingOrderAvailable(order.getVolume())) {
-                System.out.println("Courier " + courier.getName() + " skipped: not enough capacity");
                 continue;
             }
 
             Result<Integer, Error> stepsResult = courier.distanceToLocation(order.getLocation());
             if (stepsResult.isFailure()) {
-                System.out.println("Courier " + courier.getName() + " skipped: unreachable (" + stepsResult.getError() + ")");
                 continue;
             }
 
             int steps = stepsResult.getValue();
-            System.out.println("Courier " + courier.getName() + " steps: " + steps);
             if (steps < minSteps) {
                 minSteps = steps;
                 bestCourier = courier;
@@ -69,29 +63,22 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
         }
 
         if (bestCourier == null) {
-            System.out.println("No suitable courier found for order " + order.getId());
             return UnitResult.success();
         }
 
-        System.out.println("Selected courier: " + bestCourier.getName());
-
         UnitResult<Error> assignResult = order.assign(bestCourier.getId());
         if (assignResult.isFailure()) {
-            System.err.println("Failed to assign order: " + assignResult.getError());
             return assignResult;
         }
 
         UnitResult<Error> takeResult = bestCourier.takeOrder(order.getId(), order.getVolume());
         if (takeResult.isFailure()) {
-            System.err.println("Failed to take order: " + takeResult.getError());
             return takeResult;
         }
 
         orderRepository.save(order);
         courierRepository.save(bestCourier);
         unitOfWork.commit();
-        
-        System.out.println("Order " + order.getId() + " assigned to " + bestCourier.getName());
 
         return UnitResult.success();
     }
