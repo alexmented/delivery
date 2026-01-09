@@ -2,11 +2,16 @@ package delivery.adapters.out.postgres;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
+@TestPropertySource(properties = {
+    "spring.aop.proxy-target-class=false",
+    "spring.quartz.auto-startup=false"
+})
 public abstract class BasePostgresContainerTest {
 
     @SuppressWarnings("resource")
