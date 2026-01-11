@@ -32,20 +32,20 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Location courierLoc = Location.create(1, 1).getValue();
-        Courier courier = Courier.create("John", 20, courierLoc).getValue();
-        courierRepository.save(courier);
-        Location orderLoc = Location.create(5, 5).getValue();
-        Order order = Order.create(UUID.randomUUID(), orderLoc, 5).getValue();
-        orderRepository.save(order);
-
-        var command = AssignOrderCommand.create().getValue();
-        UnitResult<Error> result = handler.handle(command);
-
-        if (result.isSuccess()) {
-            System.out.println("SUCCESS: Order dispatched successfully!");
-        } else {
-            System.out.println("FAILURE: " + result.getError().getMessage());
-        }
+//        Location courierLoc = Location.create(1, 1).getValue();
+//        Courier courier = Courier.create("John", 20, courierLoc).getValue();
+//        courierRepository.save(courier);
+//        Location orderLoc = Location.create(5, 5).getValue();
+//        Order order = Order.create(UUID.randomUUID(), orderLoc, 5).getValue();
+//        orderRepository.save(order);
+//
+//        var command = AssignOrderCommand.create().getValue();
+//        UnitResult<Error> result = handler.handle(command);
+//
+//        if (result.isSuccess()) {
+//            System.out.println("SUCCESS: Order dispatched successfully!");
+//        } else {
+//            System.out.println("FAILURE: " + result.getError().getMessage());
+//        }
     }
 }
