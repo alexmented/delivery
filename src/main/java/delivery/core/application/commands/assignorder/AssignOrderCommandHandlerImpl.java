@@ -33,12 +33,12 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
     public UnitResult<Error> handle(AssignOrderCommand command) {
         List<Courier> freeCouriers = courierRepository.findAllFree();
         if (freeCouriers.isEmpty()) {
-            return UnitResult.success(); 
+            return UnitResult.success();
         }
 
         List<Order> unassignedOrders = orderRepository.findAllByStatus(Status.CREATED);;
         if (unassignedOrders.isEmpty()) {
-            return UnitResult.success(); 
+            return UnitResult.success();
         }
         Order order = unassignedOrders.getFirst();
 
@@ -67,10 +67,14 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
         }
 
         UnitResult<Error> assignResult = order.assign(bestCourier.getId());
-        if (assignResult.isFailure()) return assignResult;
+        if (assignResult.isFailure()) {
+            return assignResult;
+        }
 
         UnitResult<Error> takeResult = bestCourier.takeOrder(order.getId(), order.getVolume());
-        if (takeResult.isFailure()) return takeResult;
+        if (takeResult.isFailure()) {
+            return takeResult;
+        }
 
         orderRepository.save(order);
         courierRepository.save(bestCourier);
