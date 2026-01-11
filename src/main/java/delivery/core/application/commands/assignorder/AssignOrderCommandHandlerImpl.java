@@ -3,12 +3,13 @@ package delivery.core.application.commands.assignorder;
 import delivery.core.domain.model.courier.Courier;
 import delivery.core.domain.model.order.Order;
 import delivery.core.domain.model.order.Status;
+import delivery.core.domain.services.OrderDispatcher;
 import delivery.core.ports.CourierRepository;
 import delivery.core.ports.OrderRepository;
 import delivery.core.ports.UnitOfWork;
 import libs.errs.Error;
-import libs.errs.UnitResult;
 import libs.errs.Result;
+import libs.errs.UnitResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,16 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
     private final UnitOfWork unitOfWork;
+    private final OrderDispatcher orderDispatcher;
 
     public AssignOrderCommandHandlerImpl(OrderRepository orderRepository,
                                          CourierRepository courierRepository,
-                                         UnitOfWork unitOfWork) {
+                                         UnitOfWork unitOfWork,
+                                         OrderDispatcher orderDispatcher) {
         this.orderRepository = orderRepository;
         this.courierRepository = courierRepository;
         this.unitOfWork = unitOfWork;
+        this.orderDispatcher = orderDispatcher;
     }
 
     @Override
@@ -36,41 +40,19 @@ public final class AssignOrderCommandHandlerImpl implements AssignOrderCommandHa
             return UnitResult.success(); 
         }
 
-        List<Order> unassignedOrders = orderRepository.findAllByStatus(Status.CREATED);;
+        List<Order> unassignedOrders = orderRepository.findAllByStatus(Status.CREATED);
         if (unassignedOrders.isEmpty()) {
             return UnitResult.success(); 
         }
         Order order = unassignedOrders.getFirst();
 
-        Courier bestCourier = null;
-        int minSteps = Integer.MAX_VALUE;
-
-        for (Courier courier : freeCouriers) {
-            if (!courier.isTakingOrderAvailable(order.getVolume())) {
-                continue;
-            }
-
-            Result<Integer, Error> stepsResult = courier.distanceToLocation(order.getLocation());
-            if (stepsResult.isFailure()) {
-                continue;
-            }
-
-            int steps = stepsResult.getValue();
-            if (steps < minSteps) {
-                minSteps = steps;
-                bestCourier = courier;
-            }
-        }
-
-        if (bestCourier == null) {
+        Result<Courier, Error> dispatchResult = orderDispatcher.dispatch(order, freeCouriers);
+        
+        if (dispatchResult.isFailure()) {
             return UnitResult.success();
         }
 
-        UnitResult<Error> assignResult = order.assign(bestCourier.getId());
-        if (assignResult.isFailure()) return assignResult;
-
-        UnitResult<Error> takeResult = bestCourier.takeOrder(order.getId(), order.getVolume());
-        if (takeResult.isFailure()) return takeResult;
+        Courier bestCourier = dispatchResult.getValue();
 
         orderRepository.save(order);
         courierRepository.save(bestCourier);
