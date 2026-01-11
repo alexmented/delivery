@@ -1,5 +1,6 @@
 package delivery.core.application.commands.movecouriers;
 
+import delivery.DomainEventPublisher;
 import delivery.core.domain.model.courier.Courier;
 import delivery.core.domain.model.order.Order;
 import delivery.core.domain.model.order.Status;
@@ -19,13 +20,16 @@ public final class MoveCouriersCommandHandlerImpl implements MoveCouriersCommand
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
     private final UnitOfWork unitOfWork;
+    private final DomainEventPublisher domainEventPublisher;
 
     public MoveCouriersCommandHandlerImpl(OrderRepository orderRepository, 
                                           CourierRepository courierRepository, 
-                                          UnitOfWork unitOfWork) {
+                                          UnitOfWork unitOfWork,
+                                          DomainEventPublisher domainEventPublisher) {
         this.orderRepository = orderRepository;
         this.courierRepository = courierRepository;
         this.unitOfWork = unitOfWork;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Override
@@ -57,6 +61,8 @@ public final class MoveCouriersCommandHandlerImpl implements MoveCouriersCommand
         }
 
         unitOfWork.commit();
+        domainEventPublisher.publish(assigned);
+        
         return UnitResult.success();
     }
 }

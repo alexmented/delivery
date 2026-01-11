@@ -1,6 +1,8 @@
 package delivery.core.domain.model.order;
 
 import delivery.core.domain.model.Location;
+import delivery.core.domain.model.order.events.OrderCompletedDomainEvent;
+import delivery.core.domain.model.order.events.OrderCreatedDomainEvent;
 import jakarta.persistence.*;
 import libs.ddd.Aggregate;
 import libs.errs.*;
@@ -50,7 +52,9 @@ public final class Order extends Aggregate<UUID> {
             return Result.failure(validation.getError());
         }
 
-        return Result.success(new Order(id, location, volume));
+        var order = new Order(id, location, volume);
+        order.raiseDomainEvent(new OrderCreatedDomainEvent(order));
+        return Result.success(order);
     }
 
     public UnitResult<Error> assign(UUID courierId) {
@@ -67,6 +71,7 @@ public final class Order extends Aggregate<UUID> {
         }
 
         this.status = Status.COMPLETED;
+        this.raiseDomainEvent(new OrderCompletedDomainEvent(this));
         return UnitResult.success();
     }
 
