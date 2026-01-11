@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.h2database:h2:2.2.224'
     implementation 'org.postgresql:postgresql'
     implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
     
     // gRPC & Protobuf
     implementation 'com.google.protobuf:protobuf-java-util:3.24.3'
