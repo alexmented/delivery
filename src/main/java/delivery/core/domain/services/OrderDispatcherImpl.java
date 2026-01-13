@@ -16,7 +16,7 @@ public class OrderDispatcherImpl implements OrderDispatcher {
     public Result<Courier, Error> dispatch(Order order, List<Courier> couriers) {
         Except.againstNull(order, "Order");
         Except.againstNull(couriers, "Couriers");
-        
+
         if (order.getStatus() != Status.CREATED) {
             return Result.failure(Errors.orderNotCreated());
         }
@@ -34,7 +34,7 @@ public class OrderDispatcherImpl implements OrderDispatcher {
             }
 
             Result<Integer, Error> stepsResult = courier.distanceToLocation(order.getLocation());
-            
+
             if (stepsResult.isFailure()) {
                 continue;
             }
