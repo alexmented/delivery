@@ -1,5 +1,6 @@
 package delivery.core.application.commands.createorder;
 
+import delivery.DomainEventPublisher;
 import delivery.core.domain.model.Location;
 import delivery.core.domain.model.order.Order;
 import delivery.core.ports.GeoClient;
@@ -11,18 +12,23 @@ import libs.errs.UnitResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public final class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler {
     private final OrderRepository orderRepository;
     private final UnitOfWork unitOfWork;
     private final GeoClient geoClient;
+    private final DomainEventPublisher domainEventPublisher;
 
     public CreateOrderCommandHandlerImpl(OrderRepository orderRepository, 
                                          UnitOfWork unitOfWork,
-                                         GeoClient geoClient) {
+                                         GeoClient geoClient,
+                                         DomainEventPublisher domainEventPublisher) {
         this.orderRepository = orderRepository;
         this.unitOfWork = unitOfWork;
         this.geoClient = geoClient;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Override
@@ -45,6 +51,7 @@ public final class CreateOrderCommandHandlerImpl implements CreateOrderCommandHa
         Order order = orderResult.getValue();
         orderRepository.save(order);
         unitOfWork.commit();
+        domainEventPublisher.publish(List.of(order));
 
         return UnitResult.success();
     }
