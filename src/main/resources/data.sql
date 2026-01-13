@@ -2,6 +2,7 @@
 DELETE FROM courier_storage_places;
 DELETE FROM couriers;
 DELETE FROM orders;
+DELETE FROM outbox;
 
 -- Добавить курьеров
 
